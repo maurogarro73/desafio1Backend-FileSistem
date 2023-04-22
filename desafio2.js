@@ -38,8 +38,14 @@ class ProductManager {
   }
 
   async getProducts() {
-    fs.existsSync('');
-    return this.products;
+    if (!fs.existsSync(this.path)) {
+      await fs.promises.writeFile(this.path, '[]');
+    }
+    let products = [];
+
+    let productsContent = await fs.promises.readFile(this.path, 'utf-8');
+    products = JSON.parse(productsContent);
+    return products;
   }
 
   async getProductById(id) {
@@ -72,7 +78,7 @@ const product2 = {
 };
 
 const productManager = new ProductManager('products.json');
-productManager
+/* productManager
   .addProduct(product1)
   .then((result) => {
     console.log(result);
@@ -87,4 +93,9 @@ productManager
   })
   .catch((error) => {
     console.log(error);
-  });
+  }); */
+
+productManager
+  .getProducts()
+  .then((result) => console.log(result))
+  .catch((error) => console.log(error));
