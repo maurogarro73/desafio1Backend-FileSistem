@@ -64,6 +64,25 @@ class ProductManager {
       return 'Not found';
     }
   }
+
+  async deleteProduct(id) {
+    if (!fs.existsSync(this.path)) {
+      await fs.promises.writeFile(this.path, '[]');
+    }
+    let products = [];
+    let productsContent = await fs.promises.readFile(this.path, 'utf-8');
+    products = JSON.parse(productsContent);
+
+    let indexProduct = products.findIndex((index) => index.id === id);
+    if (indexProduct !== -1) {
+      products.splice(indexProduct, 1);
+      let productString = JSON.stringify(products, null, 2);
+      await fs.promises.writeFile(this.path, productString);
+      return 'Delete product!';
+    } else {
+      return 'Product Not Found';
+    }
+  }
 }
 
 const product1 = {
@@ -84,15 +103,25 @@ const product2 = {
   stock: 15,
 };
 
+const product3 = {
+  title: 'producto prueba 3',
+  description: 'Este es un producto prueba 3',
+  price: 5,
+  thumbnail: 'Sin imagen',
+  code: 'abc125',
+  stock: 2,
+};
+
 const productManager = new ProductManager('products.json');
 /* productManager
-  .addProduct(product1)
+  .deleteProduct(2)
   .then((result) => {
     console.log(result);
   })
   .catch((error) => {
     console.log(error);
-  });
+  }); */
+
 productManager
   .addProduct(product2)
   .then((result) => {
@@ -100,7 +129,7 @@ productManager
   })
   .catch((error) => {
     console.log(error);
-  }); */
+  });
 
 /* productManager
   .getProducts()
