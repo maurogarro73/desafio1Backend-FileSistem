@@ -65,6 +65,31 @@ class ProductManager {
     }
   }
 
+  async updateProduct(id, modifyProduct) {
+    if (!fs.existsSync(this.path)) {
+      await fs.promises.writeFile(this.path, '[]');
+    }
+    let products = [];
+    let productsContent = await fs.promises.readFile(this.path, 'utf-8');
+    products = JSON.parse(productsContent);
+
+    const { title, description, price, thumbnail, stock } = modifyProduct;
+    let indexProduct = products.findIndex((index) => index.id === id);
+    if (indexProduct !== -1) {
+      products[indexProduct].title = title || products[indexProduct].title;
+      products[indexProduct].description = description || products[indexProduct].description;
+      products[indexProduct].price = price || products[indexProduct].price;
+      products[indexProduct].thumbnail = thumbnail || products[indexProduct].thumbnail;
+      products[indexProduct].stock = stock || products[indexProduct].stock;
+
+      let productString = JSON.stringify(products, null, 2);
+      await fs.promises.writeFile(this.path, productString);
+      return 'Modified Product';
+    } else {
+      return 'Product Not Found';
+    }
+  }
+
   async deleteProduct(id) {
     if (!fs.existsSync(this.path)) {
       await fs.promises.writeFile(this.path, '[]');
@@ -112,7 +137,20 @@ const product3 = {
   stock: 2,
 };
 
+const modifyProduct = {
+  title: 'En este caso unicamente cambio el titulo',
+};
+
 const productManager = new ProductManager('products.json');
+
+productManager
+  .updateProduct(9, modifyProduct)
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 /* productManager
   .deleteProduct(2)
   .then((result) => {
@@ -122,14 +160,14 @@ const productManager = new ProductManager('products.json');
     console.log(error);
   }); */
 
-productManager
+/* productManager
   .addProduct(product2)
   .then((result) => {
     console.log(result);
   })
   .catch((error) => {
     console.log(error);
-  });
+  }); */
 
 /* productManager
   .getProducts()
