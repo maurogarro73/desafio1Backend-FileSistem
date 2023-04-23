@@ -49,7 +49,14 @@ class ProductManager {
   }
 
   async getProductById(id) {
-    const productFound = this.products.find((item) => item.id == id);
+    if (!fs.existsSync(this.path)) {
+      await fs.promises.writeFile(this.path, '[]');
+    }
+    let products = [];
+    let productsContent = await fs.promises.readFile(this.path, 'utf-8');
+    products = JSON.parse(productsContent);
+
+    const productFound = products.find((item) => item.id == id);
     if (productFound) {
       console.log('The found product is ');
       return productFound;
@@ -95,7 +102,12 @@ productManager
     console.log(error);
   }); */
 
-productManager
+/* productManager
   .getProducts()
   .then((result) => console.log(result))
   .catch((error) => console.log(error));
+ */
+/* productManager
+  .getProductById(0)
+  .then((result) => console.log(result))
+  .catch((error) => console.log(error)); */
